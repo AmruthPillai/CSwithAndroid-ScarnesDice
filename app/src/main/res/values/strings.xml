@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Scarne\'s Dice</string>
+
+    <string name="dice_face">Dice Face</string>
+    <string name="roll">Roll</string>
+    <string name="hold">Hold</string>
+    <string name="reset">Reset</string>
+
+    <string name="user_winner">You are the winner!</string>
+    <string name="cpu_winner">CPU is the winner!</string>
 </resources>

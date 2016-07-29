@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.util.Random;
 
 public class DiceActivity extends AppCompatActivity {
@@ -16,7 +19,7 @@ public class DiceActivity extends AppCompatActivity {
     private static int userOverallScore, userTurnScore, cpuOverallScore, cpuTurnScore;
     private static final int WIN_SCORE = 100;
 
-    private static TextView tvScore;
+    private static TextView tvScore, tvWinner;
     private static Button btnRoll, btnHold, btnReset;
     private static ImageView ivDiceFace;
 
@@ -37,6 +40,7 @@ public class DiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dice);
 
         tvScore = (TextView) findViewById(R.id.tv_score);
+        tvWinner = (TextView) findViewById(R.id.tv_winner);
 
         btnRoll = (Button) findViewById(R.id.btn_roll);
         btnHold = (Button) findViewById(R.id.btn_hold);
@@ -63,8 +67,10 @@ public class DiceActivity extends AppCompatActivity {
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivDiceFace.setImageResource(diceFaces[0]);
                 userOverallScore = userTurnScore = cpuOverallScore = cpuTurnScore = 0;
                 updateScoreLabel();
+                tvWinner.setText("");
                 btnRoll.setEnabled(true);
                 btnHold.setEnabled(true);
             }
@@ -83,6 +89,11 @@ public class DiceActivity extends AppCompatActivity {
             cpuTurn();
         } else {
             Log.d("Score", "You rolled " + diceValue);
+
+            YoYo.with(Techniques.Shake)
+                    .duration(250)
+                    .playOn(ivDiceFace);
+
             ivDiceFace.setImageResource(diceFaces[diceValue - 1]);
             userTurnScore += diceValue;
             updateScoreLabel();
@@ -93,6 +104,14 @@ public class DiceActivity extends AppCompatActivity {
         userOverallScore += userTurnScore;
         userTurnScore = 0;
         updateScoreLabel();
+
+        if (userOverallScore >= WIN_SCORE) {
+            tvWinner.setText(R.string.user_winner);
+            btnRoll.setEnabled(false);
+            btnHold.setEnabled(false);
+            return;
+        }
+
         cpuTurn();
     }
 
@@ -117,8 +136,17 @@ public class DiceActivity extends AppCompatActivity {
         } while (cpuTurnScore < 20);
 
         cpuOverallScore += cpuTurnScore;
+        Log.d("Score", "CPU Overall Score: " + cpuOverallScore);
+
         cpuTurnScore = 0;
         updateScoreLabel();
+
+        if (cpuOverallScore >= WIN_SCORE) {
+            tvWinner.setText(R.string.cpu_winner);
+            btnRoll.setEnabled(false);
+            btnHold.setEnabled(false);
+            return;
+        }
 
         btnRoll.setEnabled(true);
         btnHold.setEnabled(true);
